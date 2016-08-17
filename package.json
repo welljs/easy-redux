@@ -1,6 +1,6 @@
 {
   "name": "easy-redux",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Helpers to facilitate the work with redux",
   "main": "index.js",
   "scripts": {
