@@ -2,7 +2,8 @@ export { middleware } from './middleware';
 
 export {
     applyReducer,
-    localCompose
+    localCompose,
+    combine
 } from './easy-redux';
 
 export {
