@@ -9,7 +9,7 @@ function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
   const FAIL_STATE = `${storeKey}@${reducerName}.fail`;
   const {onWaiting, onFail, onSuccess} = handlers;
   return {
-    reducer (state = {...initialState, isFailed: false, isWaiting: false}, action = {}) {
+    reducer (state = {isFailed: false, isWaiting: false, ...initialState}, action = {}) {
 
       switch (action.type) {
         case WAITING_STATE: {
