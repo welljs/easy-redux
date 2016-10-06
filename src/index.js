@@ -1,10 +1,14 @@
+
 export { default as middleware } from './middleware';
 
 export {
     applyReducer,
     localCompose,
-    combine
+    combine,
+    mergeReducer
 } from './easy-redux';
+
+export {createAction} from './actionCreator';
 
 export {
     applyRequestReducers,

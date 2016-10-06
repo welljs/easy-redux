@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-
+import {appStore} from './index';
 const cache = {};
 
 /**
@@ -16,6 +16,15 @@ export function applyReducer (key, fn, replace = false) {
     }
     cache[key] = fn;
 }
+
+export function mergeReducer(key, fn) {
+    if (!cache[key]) {
+        throw new Error(`Reducer with name ${key} not found`);
+    }
+    applyReducer(key, localCompose(cache[key], fn), true);
+}
+
+
 
 /**
  *
