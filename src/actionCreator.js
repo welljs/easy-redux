@@ -32,11 +32,11 @@ export function createAction (name, options = {}) {
     const SUCCESS = `SUCCESS@${name}`;
     const FAIL = `FAIL@${name}`;
     const type = name;
-    const {action, async, storeKey, handlers, handler, defaultState} = options;
+    const {action, async, storeKey, handlers, handler, initialState} = options;
     let reducer;
 
-    if (!defaultState) {
-        throw new Error('Default state should not be null or undefined');
+    if (!initialState) {
+        throw new Error('Initial state should not be null or undefined');
     }
 
     if (!storeKey) {
@@ -45,7 +45,7 @@ export function createAction (name, options = {}) {
 
     if (async) {
         checkAsyncHandlers(handlers);
-        reducer = (state = defaultState, action) => {
+        reducer = (state = initialState, action) => {
             switch(action.type) {
                 case WAIT: return handlers.onWait(state, action);
                 case SUCCESS: return handlers.onSuccess(state, action);
@@ -58,7 +58,7 @@ export function createAction (name, options = {}) {
         if (!isFunction(handler)) {
             throw new Error(`Expected that actions ${name} handler will be a function, and it will returns new state`)
         }
-        reducer = (state = defaultState, action) => action.type === name ? handler(state, action) : state;
+        reducer = (state = initialState, action) => action.type === name ? handler(state, action) : state;
     }
 
     mergeReducer(storeKey, reducer);

@@ -65,12 +65,11 @@ function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
 export function applyRequestReducers (storeKey, data, replace = false) {
   const reducers = [];
   const commonInitialState = {
-    data: {},
     error: null
   };
   Object.entries(data).forEach(([reducerName, options]) => {
     let {initialState, ...handlers} = options;
-    initialState = Object.assign({}, commonInitialState, initialState);
+    initialState = Object.assign(initialState, commonInitialState);
     const cacheKey = `${storeKey}.${reducerName}`;
     cache[cacheKey] = {...createReducer({storeKey, reducerName, initialState, handlers})};
     reducers.push(cache[cacheKey].reducer);
