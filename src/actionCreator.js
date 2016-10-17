@@ -1,9 +1,4 @@
-import {mergeReducer} from './index';
-
-
-function isFunction (thing) {
-    return typeof thing === 'function';
-}
+import {mergeReducer, isFunction} from './index';
 
 function checkAsyncHandlers (handlers) {
     const {onWait, onSuccess, onFail} = handlers;
@@ -67,7 +62,7 @@ export function createAction (name, options = {}) {
         return (function () {
             const {promise, type: excludeTypeFromActionIfExists, ...actionPayload} = action.apply(undefined, args);
             if (async) {
-                if (typeof promise !== 'function') {
+                if (!isFunction(promise)) {
                     throw new Error(`Async action ${name} should return promise property of Function type`);
                 }
                 else {

@@ -1,7 +1,8 @@
 'use strict';
+import {isFunction} from './index';
 export default function(request){
     return ({dispatch, getState}) => next => action => {
-        if(typeof action === 'function'){
+        if(isFunction(action)){
             return action(dispatch, getState);
         }
         let {promise, types, ...rest} = action;
@@ -14,7 +15,7 @@ export default function(request){
 
         if (!(actionPromise instanceof Promise)) {
             const {promise, ...actionRest} = actionPromise;
-            if (typeof promise !== 'function') {
+            if (!isFunction(promise)) {
                 throw new Error('Bad promise');
             }
             rest = Object.assign(rest, actionRest);

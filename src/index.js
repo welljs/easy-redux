@@ -1,3 +1,4 @@
+export const isFunction = thing => typeof thing === 'function';
 
 export { default as middleware } from './middleware';
 
@@ -9,9 +10,3 @@ export {
 } from './easy-redux';
 
 export {createAction} from './actionCreator';
-
-export {
-    applyRequestReducers,
-    createRequestReducer,
-    requestReducer
-} from './requestReducer';
