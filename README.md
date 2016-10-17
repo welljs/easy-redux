@@ -6,7 +6,18 @@ Helpers to facilitate the work with redux
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 
-Основная возможность - уход от размывания кода на actions, constants, types. Компонента становится независимой, инкапсулирует в себе все данные и методы которые нужны для работы
+Основная возможность - уход от размывания кода на actions, constants, types. Компонента становится независимой, инкапсулирует в себе все данные и методы которые нужны для работы.
+
+В данном случае структура компоненты внутри приложения принимет следующий вид:
+
+```
+    /components
+        /MyComponent
+            actions.js
+            component.js
+            index.js                        
+```
+
 
 ```javascript
 //index.js
@@ -19,6 +30,7 @@ export const dataShape = {
     likes: array.isRequired,
 };
 export const STORE_KEY = 'likes';
+export MyComponent from './component';
 ```
 
 
@@ -102,3 +114,5 @@ export default class MyComponent extends Component {
 
   
 ```
+
+Соответственно при импорте компоненты в глобальном сторе появится поле `likes` (`STORE_KEY`), подключится `reducer` и `actions`
