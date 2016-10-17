@@ -6,9 +6,19 @@ Helpers to facilitate the work with redux
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 
+
 Основная возможность - уход от размывания кода на actions, constants, types. Компонента становится независимой, инкапсулирует в себе все данные и методы которые нужны для работы.
 
+
+Установка: 
+```
+    npm i easy-redux
+```
+
+
 В данном случае структура компоненты внутри приложения принимет следующий вид:
+
+
 
 ```
     /components
