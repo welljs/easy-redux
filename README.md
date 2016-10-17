@@ -106,7 +106,7 @@ export default class MyComponent extends Component {
             <div>
                 <p>{status}</p>
                 <button onClick={this.onUpdateClick} className={isWaiting ? 'waiting' : ''}>Update</button>
-                <button onClick={this.onResetClick} className={isWaiting ? 'waiting' : ''}>Reset</button>
+                <button onClick={this.onResetClick}>Reset</button>
             </div>
         );
     }
