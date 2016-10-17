@@ -19,7 +19,8 @@ export function applyReducer (key, fn, replace = false) {
 
 export function mergeReducer(key, fn) {
     if (!cache[key]) {
-        throw new Error(`Reducer with name ${key} not found`);
+        //blank reducer if not exist
+        cache[key] = state => state;
     }
     applyReducer(key, localCompose(cache[key], fn), true);
 }
