@@ -12,7 +12,7 @@ See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 Установка: 
 ```
-    npm i easy-redux
+    npm i easy-redux -S
 ```
 
 
