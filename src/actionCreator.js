@@ -51,7 +51,7 @@ export function createAction (name, options = {}) {
     }
     else {
         if (!isFunction(handler)) {
-            throw new Error(`Expected that actions ${name} handler will be a function, and it will returns new state`)
+            throw new Error(`Expected that synchronous action ${name} handler will be a function, and it will returns new state`)
         }
         reducer = (state = initialState, action) => action.type === name ? handler(state, action) : state;
     }
@@ -74,4 +74,33 @@ export function createAction (name, options = {}) {
             }
         })();
     }
+}
+
+function defaultAction() { return {}; }
+
+export function createActions(options = Object.assign({},defaults)) {
+    const {actions, initialState: globalInitialState, storeKey: globalStoreKey} = options;
+    if (!Object.keys(actions)) {
+        throw new Error('No any action passed');
+    }
+    return Object.entries(actions).reduce((res, [actionName, actionOptions]) => {
+        const {
+            async: optionAsync,
+            initialState,
+            storeKey,
+            action,
+            handler,
+            handlers,
+        } = actionOptions;
+        const async = optionAsync || !!handlers;
+        res[actionName] = createAction(actionName, {
+            async,
+            action: action || defaultAction,
+            handler,
+            handlers,
+            initialState: initialState || globalInitialState,
+            storeKey: storeKey || globalStoreKey,
+        });
+        return res;
+    }, {});
 }

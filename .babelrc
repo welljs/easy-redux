@@ -4,5 +4,6 @@
     "transform-runtime",
     "add-module-exports"
   ],
+  "sourceMaps": true,
   "retainLines": true
 }

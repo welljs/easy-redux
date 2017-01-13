@@ -10,3 +10,4 @@ export {
 } from './easy-redux';
 
 export {createAction} from './actionCreator';
+export {createActions} from './actionCreator';
