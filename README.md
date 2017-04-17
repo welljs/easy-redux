@@ -95,7 +95,7 @@ import {loadLikes, reset} from './actions';
 
 @connect(state => ({
     [STORE_KEY]: state[STORE_KEY]
-}), {ACTION_REMOTE_LIKES, ACTION_RESET})
+}), {loadLikes, reset})
 export default class MyComponent extends Component {
     static propTypes = {
         [STORE_KEY]: PropTypes.shape(dataShape),
