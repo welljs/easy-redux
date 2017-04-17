@@ -50,8 +50,8 @@ export MyComponent from './component';
 //actions.js
 import {createActions} from 'easy-redux';
 import {STORE_KEY} from './index';
-export const ACTION_RESET = 'increment';
-export const ACTION_REMOTE_LIKES = 'remote_like';
+const ACTION_RESET = 'increment';
+const ACTION_REMOTE_LIKES = 'remote_like';
 
 const initialState = {
     isWaiting: false,
