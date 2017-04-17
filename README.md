@@ -48,6 +48,7 @@ export MyComponent from './component';
 ```javascript
 
 //actions.js
+import {createActions} from 'easy-redux';
 import {STORE_KEY} from './index';
 export const ACTION_RESET = 'increment';
 export const ACTION_REMOTE_LIKES = 'remote_like';
@@ -59,26 +60,27 @@ const initialState = {
     likes: [],
 };
 
-export default {
-    [ACTION_REMOTE_LIKES]: createAction(ACTION_REMOTE_LIKES, {
-        async: true,
-        storeKey: STORE_KEY,
-        initialState,
-        action: userId => ({promise: request => request('/api/likes').get({userId})}),
-        handlers: {
-            onWait: (state, action) => ({...state, isWaiting: true, isFailed: false}),
-            onFail: (state, action) => ({...state, isWaiting: false, isFailed: true}),
-            onSuccess: (state, action) => ({...state, isWaiting: false, likes: action.result, status:'updated'})
+export default const actions = createActions({
+    initialState, 
+    storeKey,
+    actions: {
+        [ACTION_REMOTE_LIKES]: {
+            action: userId => ({promise: request => request('/api/likes').get({userId})}),
+            handlers: {
+                onWait: (state, action) => ({...state, isWaiting: true, isFailed: false}),
+                onFail: (state, action) => ({...state, isWaiting: false, isFailed: true}),
+                onSuccess: (state, action) => ({...state, isWaiting: false, likes: action.result, status:'updated'})
+            }
+        },
+        [ACTION_RESET]: {
+            action: () =>({}),
+            handler: (state, action) => ({...state, ...Object.assign({}, initialState)})
         }
-    }),
-    [ACTION_RESET]: createAction (ACTION_RESET, {
-        initialState,
-        storeKey: STORE_KEY,
-        action: () =>({}),
-        handler: (state, action) => ({...state, ...Object.assign({}, initialState)})
-    })
-};
+    }
+});
 
+export const loadLikes = actions[ACTION_REMOTE_LIKES];
+export const reset = actions[ACTION_RESET];
 
 ```
 
@@ -89,7 +91,7 @@ import {Component, PropTypes} from 'react';
 import {STORE_KEY, dataShape} from './index';
 import {connect} from 'react-redux';
 
-import {ACTION_REMOTE_LIKES, ACTION_RESET} from './actions';
+import {loadLikes, reset} from './actions';
 
 @connect(state => ({
     [STORE_KEY]: state[STORE_KEY]
@@ -98,16 +100,16 @@ export default class MyComponent extends Component {
     static propTypes = {
         [STORE_KEY]: PropTypes.shape(dataShape),
         //actions
-        [ACTION_REMOTE_LIKES]: PropTypes.func.isRequired,
-        [ACTION_RESET]: PropTypes.func.isRequired
+        loadLikes: PropTypes.func.isRequired,
+        reset: PropTypes.func.isRequired
     };
 
     onUpdateClick = (e) => {
-        this.props[ACTION_REMOTE_LIKES]();
+        this.props.loadLikes();
     };
 
     onResetClick = (e) => {
-        this.props[ACTION_RESET]();
+        this.props.reset();
     };
 
     render () {
