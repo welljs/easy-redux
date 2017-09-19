@@ -1,8 +1,4 @@
-import {mergeReducer} from './index';
-
-function isFunction(thing: any): boolean {
-  return typeof thing === 'function';
-}
+import {mergeReducer, isFunction} from './index';
 
 function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
   const {onWait, onSuccess, onFail} = handlers;
@@ -27,7 +23,7 @@ function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
  * @param {Object} options
  * @returns {Function}
  */
-export function createAction(name: string, options: IActionOptions) {
+export function createAction<Payload>(name: string, options: IActionOptions<Payload>) {
   const WAIT = `WAIT@${name}`;
   const SUCCESS = `SUCCESS@${name}`;
   const FAIL = `FAIL@${name}`;
@@ -45,7 +41,7 @@ export function createAction(name: string, options: IActionOptions) {
   
   if (async && handlers) {
     checkAsyncHandlers(handlers);
-    reducer = (state = initialState, action) => {
+    reducer = (state = initialState, action: TAction<Payload>) => {
       switch (action.type) {
         case WAIT:
           return handlers.onWait(state, action);
@@ -63,9 +59,9 @@ export function createAction(name: string, options: IActionOptions) {
   }
   else {
     if (!isFunction(handler)) {
-      throw new Error(`Expected that actions ${name} handler will be a function, and it will returns new state`)
+      throw new Error(`Expected that synchronous action ${name} handler will be a function, and it will returns new state`)
     }
-    reducer = (state = initialState, action) => action.type === name ? handler(state, action) : state;
+    reducer = (state = initialState, action: TAction<Payload>) => action.type === name ? handler(state, action) : state;
   }
   
   mergeReducer(storeKey, reducer);
@@ -86,4 +82,31 @@ export function createAction(name: string, options: IActionOptions) {
       }
     })();
   }
+}
+
+export function createActions(options: ICreateActionsOptions) {
+  const {actions, initialState: globalInitialState, storeKey: globalStoreKey} = options;
+  if (!Object.keys(actions)) {
+    throw new Error('No any action passed');
+  }
+  return Object.entries(actions).reduce((res, [actionName, actionOptions]) => {
+    const {
+      async: optionAsync,
+      initialState,
+      storeKey,
+      action,
+      handler,
+      handlers,
+    } = actionOptions;
+    const async = optionAsync || !!handlers;
+    res[actionName] = createAction(actionName, {
+      async,
+      action,
+      handler,
+      handlers,
+      initialState: initialState || globalInitialState,
+      storeKey: storeKey || globalStoreKey,
+    });
+    return res;
+  }, {});
 }

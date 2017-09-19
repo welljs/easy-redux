@@ -1,11 +1,5 @@
-type IAsyncActionTypes = string[];
-
 type TDispatch = (action: string) => void;
 type TGetState = () => object;
-
-// request helper, like superagent
-type TRequest = () => any;
-type TReducer = (state: object, action: object) => object;
 
 interface IStore {
   dispatch: TDispatch;
@@ -13,23 +7,29 @@ interface IStore {
 }
 
 interface IActionDefaults {
-  promise: TActionPromise;
-}
-
-type TActionPromise<ExtraData> = (request: TRequest) => Promise<any> | IActionDefaults & ExtraData;
-
-interface IAsyncActionDefaults {
-  promise: TActionPromise;
-  types: IAsyncActionTypes;
-}
-
-type TActionAsFunction = (dispatch: TDispatch, getState: TGetState) => void;
-type TActionAsObject<ExtraData> = IAsyncActionDefaults & ExtraData;
-type TAction<ExtraData> = TActionAsFunction | TActionAsObject<ExtraData>;
-
-interface IActionDefaults {
   type: string
 }
+
+type TAction<Payload> = IActionDefaults & Payload;
+type TReducer<Payload> = (state: object, action: TAction<Payload>) => object;
+
+type TMiddlewareNext<Payload> = (action: TCustomAction<Payload>) => void;
+// request helper, like superagent
+type TRequest = () => Promise<any>;
+
+interface ICustomAction {
+  promise: TRequest,
+  types: any[]
+}
+type TCustomActionAsFunction = (dispatch: TDispatch, getState: TGetState) => any;
+type TCustomAction<Payload> = (ICustomAction & Payload) | TCustomActionAsFunction;
+
+type TActionPassCallback<Payload> = (action: TAction<Payload> | TCustomAction<Payload>) => Promise<any>;
+type TNextPassCallback<Payload> = (next: TMiddlewareNext<Payload>) => TActionPassCallback<Payload>;
+type TStorePassCallback<Payload> = (store: IStore) => TNextPassCallback<Payload>;
+type TAsyncMiddleware<Payload> = (requestHelper: TRequest) => TStorePassCallback<Payload>;
+
+type IAsyncActionTypes = string[];
 
 interface IAsyncActionHandlers {
   onWait: TReducer,
@@ -37,11 +37,18 @@ interface IAsyncActionHandlers {
   onSuccess: TReducer
 }
 
-interface IActionOptions {
-  action: IActionDefaults,
+
+interface IActionOptions<Payload> {
+  action: () => object,
   async?: boolean,
   storeKey: string,
   handlers?: IAsyncActionHandlers
-  handler: TReducer,
+  handler: TReducer<Payload>,
   initialState: object
+}
+
+interface ICreateActionsOptions {
+  actions: object,
+  initialState: object,
+  storeKey: string
 }

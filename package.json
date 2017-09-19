@@ -4,7 +4,7 @@
   "description": "Helpers to facilitate the work with redux",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register test/**/*",
     "build": "babel src --out-dir lib",
     "dev": "better-npm-run dev"
   },
