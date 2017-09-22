@@ -6,30 +6,36 @@ interface IStore {
   getState: TGetState;
 }
 
-interface IActionDefaults {
-  type: string
+type TActionType = string;
+interface IAction {
+  type: TActionType
 }
 
-type TAction<Payload> = IActionDefaults & Payload;
-type TReducer<Payload> = (state: object, action: TAction<Payload>) => object;
+type TActionWithPayload<Payload> = IAction | Payload;
+type TReducer<Payload extends object, State extends object> = (state: State, action: TActionWithPayload<Payload>) => State;
 
-type TMiddlewareNext<Payload> = (action: TCustomAction<Payload>) => void;
+/**
+ * middleware.ts
+ */
 // request helper, like superagent
-type TRequest = () => Promise<any>;
+type TRequestHelper = () => Promise<any>;
 
-interface ICustomAction {
-  promise: TRequest,
-  types: any[]
+type TPromiseHelper = (requestHelper: TRequestHelper) => Promise<any>;
+
+type TCustomActionPromise = Promise<any> | {
+  promise: TPromiseHelper
+};
+
+type TAsyncAction<Payload> = IAction & {
+  promise: TPromiseHelper | TCustomActionPromise,
+  types?: TActionType[],
+  result?: any,
+  error?: any
 }
-type TCustomActionAsFunction = (dispatch: TDispatch, getState: TGetState) => any;
-type TCustomAction<Payload> = (ICustomAction & Payload) | TCustomActionAsFunction;
 
-type TActionPassCallback<Payload> = (action: TAction<Payload> | TCustomAction<Payload>) => Promise<any>;
-type TNextPassCallback<Payload> = (next: TMiddlewareNext<Payload>) => TActionPassCallback<Payload>;
-type TStorePassCallback<Payload> = (store: IStore) => TNextPassCallback<Payload>;
-type TAsyncMiddleware<Payload> = (requestHelper: TRequest) => TStorePassCallback<Payload>;
+type TActionAsFunction = (dispatch: TDispatch, getState: TGetState) => any;
 
-type IAsyncActionTypes = string[];
+type TMiddlewareNext<Payload extends object> = (action: TAsyncAction<Payload> | TActionWithPayload<Payload>) => void;
 
 interface IAsyncActionHandlers {
   onWait: TReducer,

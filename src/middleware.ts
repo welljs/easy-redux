@@ -1,22 +1,24 @@
-'use strict';
-
-export default function<ActionPayload>(requestHelper: TRequest): TStorePassCallback<ActionPayload> {
-  return ({dispatch, getState}: IStore): TNextPassCallback<ActionPayload> => {
-    return (next: TMiddlewareNext<ActionPayload>): TActionPassCallback<ActionPayload> => {
-      return (action: TCustomAction<ActionPayload>) => {
+export default function<ActionPayload extends object>(requestHelper: TRequestHelper) {
+  return ({dispatch, getState}: IStore) => {
+    return (next: TMiddlewareNext<ActionPayload>) => {
+      return (action: TAsyncAction<ActionPayload> | TActionAsFunction) => {
         
         if (typeof action === 'function') {
           return action(dispatch, getState);
         }
-   
+        
         let {promise, types, ...rest} = action;
   
         if (!promise) {
           return next(action);
         }
-  
-        const [REQUEST, SUCCESS, FAILURE] = types;
-        let actionPromise = promise(requestHelper);
+        
+        const [REQUEST, SUCCESS, FAILURE] = types as TActionType[];
+        let actionPromise;
+        
+        if (typeof promise === 'function') {
+            actionPromise = promise(requestHelper);
+        }
   
         if (!(actionPromise instanceof Promise)) {
           const {promise, ...actionRest} = actionPromise;

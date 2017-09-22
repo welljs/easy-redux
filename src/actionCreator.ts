@@ -41,7 +41,7 @@ export function createAction<Payload>(name: string, options: IActionOptions<Payl
   
   if (async && handlers) {
     checkAsyncHandlers(handlers);
-    reducer = (state = initialState, action: TAction<Payload>) => {
+    reducer = (state = initialState, action: TActionWithPayload<Payload>) => {
       switch (action.type) {
         case WAIT:
           return handlers.onWait(state, action);
@@ -61,7 +61,7 @@ export function createAction<Payload>(name: string, options: IActionOptions<Payl
     if (!isFunction(handler)) {
       throw new Error(`Expected that synchronous action ${name} handler will be a function, and it will returns new state`)
     }
-    reducer = (state = initialState, action: TAction<Payload>) => action.type === name ? handler(state, action) : state;
+    reducer = (state = initialState, action: TActionWithPayload<Payload>) => action.type === name ? handler(state, action) : state;
   }
   
   mergeReducer(storeKey, reducer);
