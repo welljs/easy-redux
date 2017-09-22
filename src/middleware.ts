@@ -1,4 +1,3 @@
-'use strict';
 
 export default function<ActionPayload>(requestHelper: TRequest): TStorePassCallback<ActionPayload> {
   return ({dispatch, getState}: IStore): TNextPassCallback<ActionPayload> => {
@@ -16,7 +15,11 @@ export default function<ActionPayload>(requestHelper: TRequest): TStorePassCallb
         }
   
         const [REQUEST, SUCCESS, FAILURE] = types;
-        let actionPromise = promise(requestHelper);
+        let actionPromise;
+        
+        if (typeof promise === 'function') {
+            actionPromise = promise(requestHelper);
+        }
   
         if (!(actionPromise instanceof Promise)) {
           const {promise, ...actionRest} = actionPromise;

@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import {appStore} from './index';
 const cache = {};
 
 /**
