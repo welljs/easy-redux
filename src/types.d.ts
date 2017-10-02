@@ -10,7 +10,6 @@ type TActionType = string;
 interface IAction {
   type: TActionType
 }
-
 type TActionWithPayload<Payload> = IAction | Payload;
 type TReducer<Payload extends object, State extends object> = (state: State, action: TActionWithPayload<Payload>) => State;
 

@@ -6,14 +6,14 @@ export default function<ActionPayload extends object>(requestHelper: TRequestHel
         if (typeof action === 'function') {
           return action(dispatch, getState);
         }
-        
+   
         let {promise, types, ...rest} = action;
   
         if (!promise) {
           return next(action);
         }
-        
-        const [REQUEST, SUCCESS, FAILURE] = types as TActionType[];
+  
+        const [REQUEST, SUCCESS, FAILURE] = types;
         let actionPromise;
         
         if (typeof promise === 'function') {
