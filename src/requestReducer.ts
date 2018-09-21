@@ -3,7 +3,7 @@ import {applyReducer, localCompose} from './easy-redux';
 let appStore = null;
 const cache = {};
 
-function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
+function createReducer({storeKey, reducerName, initialState = {}, handlers}) {
   const WAITING_STATE = `${storeKey}@${reducerName}.waiting`;
   const SUCCESS_STATE = `${storeKey}@${reducerName}.success`;
   const FAIL_STATE = `${storeKey}@${reducerName}.fail`;
