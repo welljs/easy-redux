@@ -1,5 +1,5 @@
-const webpack = require('webpack');
-const path = require('path');
+import * as path from 'path';
+import * as webpack from 'webpack';
 
 module.exports = {
     context: path.join(__dirname, './src'),

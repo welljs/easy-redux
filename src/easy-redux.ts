@@ -1,4 +1,5 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
+
 const cache = {};
 
 /**
@@ -9,28 +10,20 @@ const cache = {};
  * @param {Boolean} replace - replace existing reducer in cache
  *
  */
-export function applyReducer (key, fn, replace = false) {
-    if (!!cache[key] && !replace) {
-        return console.error(`Reducer with name ${key} exists`);
-    }
-    cache[key] = fn;
+export function applyReducer(key: string, fn, replace: boolean): void {
+  if (!!cache[key] && !replace) {
+    return console.error(`Reducer with name ${key} exists`);
+  }
+  cache[key] = fn;
 }
-
-export function mergeReducer(key, fn) {
-    if (!cache[key]) {
-        throw new Error(`Reducer with name ${key} not found`);
-    }
-    applyReducer(key, localCompose(cache[key], fn), true);
-}
-
 
 
 /**
  *
  * @param {Object} reducers - reducers that must be merged with cached
  */
-export function combine (reducers = {}) {
-    return combineReducers({...reducers, ...cache});
+export function combine(reducers = {}) {
+  return combineReducers({...reducers, ...cache});
 }
 
 /**
@@ -38,10 +31,10 @@ export function combine (reducers = {}) {
  * @param {Array} reducers
  * @returns {Function}
  */
-export function localCompose (...reducers) {
-    return function (state, action) {
-        return reducers.reduce((prevState, currentReducer) => {
-            return currentReducer(prevState, action)
-        }, state);
-    }
+export function localCompose(...reducers) {
+  return function (state, action) {
+    return reducers.reduce((prevState, currentReducer) => {
+      return currentReducer(prevState, action)
+    }, state);
+  }
 }

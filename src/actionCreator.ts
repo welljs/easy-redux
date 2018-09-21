@@ -1,20 +1,34 @@
-import {mergeReducer, isFunction} from './index';
+import {mergeReducer, isFunction} from './helpers';
 
-function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
-  const {onWait, onSuccess, onFail} = handlers;
-  const errMessage = (fnName) => `Expected that the ${fnName} will be a function, and will returns new state`;
-  
-  if (!isFunction(onWait)) {
-    throw new Error(errMessage('onWait'));
-  }
-  
-  if (!isFunction(onSuccess)) {
-    throw new Error(errMessage('onSuccess'));
-  }
-  
-  if (!isFunction(onFail)) {
-    throw new Error(errMessage('onFail'));
-  }
+export type TActionWithPayload<Payload> = IAction & Payload;
+
+export type TReducer<Payload extends object, State extends object> = (state: State, action: TActionWithPayload<Payload>) => State;
+
+export interface IAsyncActionHandlers<Payload extends object, State extends object> {
+  onWait: TReducer<Payload, State>;
+  onFail: TReducer<Payload, State>;
+  onSuccess: TReducer<Payload, State>;
+}
+
+export interface IActionOptions<Payload extends object, State extends object> {
+  action: () => object;
+  async?: boolean;
+  storeKey: string;
+  handlers?: IAsyncActionHandlers<Payload, State>;
+  handler: TReducer<Payload, State>;
+  initialState: object;
+}
+
+export type TActionType = string;
+
+export interface IAction {
+  type: TActionType;
+}
+
+interface ICreateActionsOptions {
+  actions: object,
+  initialState: object,
+  storeKey: string
 }
 
 /**
@@ -23,7 +37,7 @@ function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
  * @param {Object} options
  * @returns {Function}
  */
-export function createAction<Payload>(name: string, options: IActionOptions<Payload>) {
+export function createAction<Payload extends object, State extends object>(name: string, options: IActionOptions<Payload, State>) {
   const WAIT = `WAIT@${name}`;
   const SUCCESS = `SUCCESS@${name}`;
   const FAIL = `FAIL@${name}`;
@@ -109,4 +123,21 @@ export function createActions(options: ICreateActionsOptions) {
     });
     return res;
   }, {});
+}
+
+function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
+  const {onWait, onSuccess, onFail} = handlers;
+  const errMessage = (fnName) => `Expected that the ${fnName} will be a function, and will returns new state`;
+
+  if (!isFunction(onWait)) {
+    throw new Error(errMessage('onWait'));
+  }
+
+  if (!isFunction(onSuccess)) {
+    throw new Error(errMessage('onSuccess'));
+  }
+
+  if (!isFunction(onFail)) {
+    throw new Error(errMessage('onFail'));
+  }
 }
