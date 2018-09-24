@@ -6,15 +6,15 @@ type TRequestHelper = () => Promise<any>;
 type TPromiseHelper = (requestHelper: TRequestHelper) => Promise<any>;
 
 type TCustomActionPromise = Promise<any> | {
-  promise: TPromiseHelper
+  promise: TPromiseHelper;
 };
 
 type TAsyncAction<Payload> = IAction & {
-  promise: TPromiseHelper | TCustomActionPromise,
-  types?: TActionType[],
-  result?: any,
-  error?: any
-}
+  promise: TPromiseHelper | TCustomActionPromise;
+  types?: TActionType[];
+  result?: any;
+  error?: any;
+};
 
 type TDispatch = (action: string) => void;
 
@@ -66,6 +66,6 @@ export function middleware<ActionPayload extends object>(requestHelper: TRequest
           .catch(error => next({...rest, error, type: FAILURE}));
         return actionPromise;
       };
-    }
-  }
+    };
+  };
 }
