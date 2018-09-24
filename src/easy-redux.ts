@@ -17,7 +17,6 @@ export function applyReducer(key: string, fn, replace: boolean): void {
   cache[key] = fn;
 }
 
-
 /**
  *
  * @param {Object} reducers - reducers that must be merged with cached
@@ -34,7 +33,14 @@ export function combine(reducers = {}) {
 export function localCompose(...reducers) {
   return function (state, action) {
     return reducers.reduce((prevState, currentReducer) => {
-      return currentReducer(prevState, action)
+      return currentReducer(prevState, action);
     }, state);
+  };
+}
+
+export function mergeReducer(key: string, fn): void {
+  if (!cache[key]) {
+    throw new Error(`Reducer with name ${key} not found`);
   }
+  applyReducer(key, localCompose(cache[key], fn), true);
 }

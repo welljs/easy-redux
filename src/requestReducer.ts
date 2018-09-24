@@ -17,7 +17,7 @@ function createReducer({storeKey, reducerName, initialState = {}, handlers}) {
             return  {...onWaiting(state, action), isWaiting: true, isFailed: false};
           }
           else {
-            return {...state, isWaiting: true, isFailed: false}
+            return {...state, isWaiting: true, isFailed: false};
           }
         }
         case SUCCESS_STATE: {
@@ -25,7 +25,7 @@ function createReducer({storeKey, reducerName, initialState = {}, handlers}) {
             return {isWaiting: false, isFailed: false, ...onSuccess(state, action)};
           }
           else {
-            return {...state, isWaiting: false, isFailed: false, data: action.result}
+            return {...state, isWaiting: false, isFailed: false, data: action.result};
           }
         }
         case FAIL_STATE: {
@@ -46,11 +46,10 @@ function createReducer({storeKey, reducerName, initialState = {}, handlers}) {
       return {
         types: [ WAITING_STATE, SUCCESS_STATE, FAIL_STATE ],
         promise: request => promise(request)(...args)
-      }
+      };
     }
   };
 }
-
 
 /**
  * apply
@@ -77,7 +76,6 @@ export function applyRequestReducers (storeKey, data, replace = false) {
   return applyReducer(storeKey, localCompose(...reducers), replace);
 }
 
-
 export function createRequestReducer (store) {
   appStore = store;
 }
@@ -90,5 +88,5 @@ export function requestReducer (key) {
       }
       return appStore.dispatch(cache[key].submit(...arguments));
     }
-  }
+  };
 }

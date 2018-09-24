@@ -1,4 +1,4 @@
-import {mergeReducer, isFunction} from './helpers';
+import {mergeReducer} from './easy-redux';
 
 export type TActionWithPayload<Payload> = IAction & Payload;
 
@@ -26,9 +26,9 @@ export interface IAction {
 }
 
 interface ICreateActionsOptions {
-  actions: object,
-  initialState: object,
-  storeKey: string
+  actions: object;
+  initialState: object;
+  storeKey: string;
 }
 
 /**
@@ -44,15 +44,15 @@ export function createAction<Payload extends object, State extends object>(name:
   const type = name;
   const {action, async, storeKey, handlers, handler, initialState} = options;
   let reducer;
-  
+
   if (!initialState) {
     throw new Error('Initial state should not be null or undefined');
   }
-  
+
   if (!storeKey) {
     throw new Error(`Store key at action ${name} not defined`);
   }
-  
+
   if (async && handlers) {
     checkAsyncHandlers(handlers);
     reducer = (state = initialState, action: TActionWithPayload<Payload>) => {
@@ -73,13 +73,13 @@ export function createAction<Payload extends object, State extends object>(name:
   }
   else {
     if (!isFunction(handler)) {
-      throw new Error(`Expected that synchronous action ${name} handler will be a function, and it will returns new state`)
+      throw new Error(`Expected that synchronous action ${name} handler will be a function, and it will returns new state`);
     }
     reducer = (state = initialState, action: TActionWithPayload<Payload>) => action.type === name ? handler(state, action) : state;
   }
-  
+
   mergeReducer(storeKey, reducer);
-  
+
   return function (...args) {
     return (function () {
       const {promise, type: excludeTypeFromActionIfExists, ...actionPayload} = action.apply(undefined, args);
@@ -88,14 +88,14 @@ export function createAction<Payload extends object, State extends object>(name:
           throw new Error(`Async action ${name} should return promise property of Function type`);
         }
         else {
-          return {types: [WAIT, SUCCESS, FAIL], promise, ...actionPayload}
+          return {types: [WAIT, SUCCESS, FAIL], promise, ...actionPayload};
         }
       }
       else {
         return {type, ...actionPayload};
       }
     })();
-  }
+  };
 }
 
 export function createActions(options: ICreateActionsOptions) {
@@ -141,3 +141,5 @@ function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
     throw new Error(errMessage('onFail'));
   }
 }
+
+const isFunction = (thing: any): boolean => typeof thing === 'function';
