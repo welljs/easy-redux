@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import {combineReducers, Reducer, ReducersMapObject} from 'redux';
 
 const cache = {};
 
@@ -10,7 +10,7 @@ const cache = {};
  * @param {Boolean} replace - replace existing reducer in cache
  *
  */
-export function applyReducer(key: string, fn, replace: boolean): void {
+export function applyReducer(key: string, fn, replace: boolean = false): void {
   if (!!cache[key] && !replace) {
     return console.error(`Reducer with name ${key} exists`);
   }
@@ -21,8 +21,8 @@ export function applyReducer(key: string, fn, replace: boolean): void {
  *
  * @param {Object} reducers - reducers that must be merged with cached
  */
-export function combine(reducers = {}) {
-  return combineReducers({...reducers, ...cache});
+export function combine<S>(reducers: ReducersMapObject): Reducer<S> {
+  return combineReducers(Object.assign({}, reducers, cache));
 }
 
 /**
@@ -40,7 +40,8 @@ export function localCompose(...reducers) {
 
 export function mergeReducer(key: string, fn): void {
   if (!cache[key]) {
-    throw new Error(`Reducer with name ${key} not found`);
+    //  blank reducer if not exist
+    cache[key] = state => state;
   }
   applyReducer(key, localCompose(cache[key], fn), true);
 }
