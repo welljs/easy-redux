@@ -1,4 +1,5 @@
 import {mergeReducer} from './easy-redux';
+import {TAsyncAction} from './middleware';
 
 export type TActionWithPayload<Payload> = IAction & Payload;
 
@@ -16,18 +17,20 @@ export interface IActionOptions<Payload extends object, State extends object> {
   storeKey: string;
   handlers?: IAsyncActionHandlers<Payload, State>;
   handler: TReducer<Payload, State>;
-  initialState: object;
+  initialState: State;
 }
 
 export type TActionType = string;
 
 export interface IAction {
   type: TActionType;
+  result?: any;
+  error?: any;
 }
 
-interface ICreateActionsOptions {
+interface ICreateActionsOptions<State extends object> {
   actions: object;
-  initialState: object;
+  initialState: State;
   storeKey: string;
 }
 
@@ -37,7 +40,7 @@ interface ICreateActionsOptions {
  * @param {Object} options
  * @returns {Function}
  */
-export function createAction<Payload extends object, State extends object>(name: string, options: IActionOptions<Payload, State>) {
+export function createAction<Payload extends object, State extends object>(name: string, options: IActionOptions<Payload, State>): () => void | IAction | TAsyncAction {
   const WAIT = `WAIT@${name}`;
   const SUCCESS = `SUCCESS@${name}`;
   const FAIL = `FAIL@${name}`;
@@ -81,7 +84,7 @@ export function createAction<Payload extends object, State extends object>(name:
   mergeReducer(storeKey, reducer);
 
   return function (...args) {
-    return (function () {
+    return (function (): void | IAction | TAsyncAction {
       const {promise, type: excludeTypeFromActionIfExists, ...actionPayload} = action.apply(undefined, args);
       if (async) {
         if (typeof promise !== 'function') {
@@ -98,7 +101,7 @@ export function createAction<Payload extends object, State extends object>(name:
   };
 }
 
-export function createActions(options: ICreateActionsOptions) {
+export function createActions<State extends object>(options: ICreateActionsOptions<State>) {
   const {actions, initialState: globalInitialState, storeKey: globalStoreKey} = options;
   if (!Object.keys(actions)) {
     throw new Error('No any action passed');
@@ -125,7 +128,7 @@ export function createActions(options: ICreateActionsOptions) {
   }, {});
 }
 
-function checkAsyncHandlers(handlers: IAsyncActionHandlers): void {
+function checkAsyncHandlers<Payload extends object, State extends object>(handlers: IAsyncActionHandlers<Payload, State>): void {
   const {onWait, onSuccess, onFail} = handlers;
   const errMessage = (fnName) => `Expected that the ${fnName} will be a function, and will returns new state`;
 

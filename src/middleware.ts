@@ -1,16 +1,16 @@
 import {TActionWithPayload, IAction, TActionType} from './actionCreator';
 
 // request helper, like superagent
-type TRequestHelper = () => Promise<any>;
+export type TRequestHelper = (...args: any[]) => Promise<any>;
 
-type TPromiseHelper = (requestHelper: TRequestHelper) => Promise<any>;
+export type TPromiseHelper = (requestHelper: TRequestHelper) => Promise<any>;
 
-type TCustomActionPromise = Promise<any> | {
+export type TCustomActionPromise = Promise<any> | {
   promise: TPromiseHelper;
 };
 
-type TAsyncAction<Payload> = IAction & {
-  promise: TPromiseHelper | TCustomActionPromise;
+export type TAsyncAction = IAction & {
+  promise?: TPromiseHelper | TCustomActionPromise;
   types?: TActionType[];
   result?: any;
   error?: any;
@@ -25,15 +25,17 @@ interface IStore {
   getState: TGetState;
 }
 
-type TMiddlewareNext<Payload extends object> = (action: TAsyncAction<Payload> | TActionWithPayload<Payload>) => void;
+type TMiddlewareNext<Payload extends object> = (action: TAsyncAction | TActionWithPayload<Payload>) => void;
 
 type TGetState = () => object;
 
-export function middleware<ActionPayload extends object>(requestHelper: TRequestHelper) {
-  return ({dispatch, getState}: IStore) => {
-    return (next: TMiddlewareNext<ActionPayload>) => {
-      return (action: TAsyncAction<ActionPayload> | TActionAsFunction) => {
+type TMiddlewareReturns<Payload> = TPromiseHelper | TCustomActionPromise | TAsyncAction | TActionAsFunction;
 
+export function middleware<Payload extends object>(requestHelper: TRequestHelper) {
+  return (store: IStore) => {
+    return (next: TMiddlewareNext<Payload>) => {
+      return (action: TAsyncAction | TActionAsFunction): TMiddlewareReturns<Payload> | void => {
+        const {dispatch, getState} = store;
         if (typeof action === 'function') {
           return action(dispatch, getState);
         }
