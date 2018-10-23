@@ -5,12 +5,12 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*",
-    "build": "babel src --out-dir lib",
-    "dev": "better-npm-run dev"
+    "build": "rm -rf lib && tsc",
+    "lint": "tslint --project tsconfig.json"
   },
   "betterScripts": {
-    "dev": {
-      "command": "webpack --watch",
+    "build": {
+      "command": "webpack --color --display-error-details --display-modules --mode production",
       "env": {
         "NODE_ENV": "dev"
       }
@@ -34,16 +34,21 @@
   },
   "homepage": "https://github.com/welljs/easy-redux#readme",
   "devDependencies": {
-    "@types/chai": "^4.0.4",
-    "@types/mocha": "^2.2.43",
-    "@types/redux": "^3.6.0",
-    "chai": "^4.1.2",
-    "mocha": "^3.5.3",
-    "ts-lint": "^4.5.1",
-    "ts-node": "^3.3.0",
-    "typescript": "^2.5.2"
+    "@types/jest": "23.3.5",
+    "@types/redux": "3.6.31",
+    "awesome-typescript-loader": "5.2.1",
+    "better-npm-run": "0.1.1",
+    "jest": "23.6.0",
+    "source-map-loader": "0.2.4",
+    "ts-jest": "23.10.4",
+    "tslint": "5.11.0",
+    "tslint-loader": "3.6.0",
+    "tslint-react": "3.6.0",
+    "typescript": "3.0.3",
+    "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "redux": "^3.5.2"
+    "redux": "4.0.0",
+    "webpack": "4.20.2"
   }
 }

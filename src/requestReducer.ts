@@ -1,39 +1,64 @@
 import {applyReducer, localCompose} from './easy-redux';
+import {TActionWithPayload, TReducer} from './actionCreator';
+import {Store} from 'redux';
 
-let appStore = null;
+let appStore: Store<object> | null = null;
 const cache = {};
 
-function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
+export type TBasicState = object & {
+  isWaiting: boolean;
+  isFailed: boolean;
+}
+
+export interface IReducerHandlers<Payload extends object, State extends TBasicState> {
+  onWaiting: TReducer<Payload, State>;
+  onFail: TReducer<Payload, State>;
+  onSuccess: TReducer<Payload, State>;
+  promise: (request) => (...args: any[]) => any;
+}
+
+export interface ICreateReducerArgs<Payload extends object, State extends TBasicState> {
+  storeKey: string;
+  reducerName: string;
+  initialState: State;
+  handlers: IReducerHandlers<Payload, State>;
+}
+
+export interface IRequestReducersData<Payload extends object, State extends TBasicState> {
+  [key: string]: IReducerHandlers<Payload, State> & {initialState: State}
+}
+
+function createReducer<Payload extends object, State extends TBasicState>({storeKey, reducerName, initialState, handlers}: ICreateReducerArgs<Payload, State>) {
   const WAITING_STATE = `${storeKey}@${reducerName}.waiting`;
   const SUCCESS_STATE = `${storeKey}@${reducerName}.success`;
   const FAIL_STATE = `${storeKey}@${reducerName}.fail`;
   const {onWaiting, onFail, onSuccess} = handlers;
   return {
-    reducer (state = {isFailed: false, isWaiting: false, ...initialState}, action = {}) {
+    reducer (state = Object.assign({isFailed: false, isWaiting: false}, initialState), action: TActionWithPayload<Payload>) {
 
       switch (action.type) {
         case WAITING_STATE: {
           if (typeof onWaiting === 'function') {
-            return  {...onWaiting(state, action), isWaiting: true, isFailed: false};
+            return Object.assign({}, onWaiting(state, action), {isWaiting: true, isFailed: false});
           }
           else {
-            return {...state, isWaiting: true, isFailed: false}
+            return Object.assign({}, state, {isWaiting: true, isFailed: false});
           }
         }
         case SUCCESS_STATE: {
           if (typeof onSuccess === 'function') {
-            return {isWaiting: false, isFailed: false, ...onSuccess(state, action)};
+            return Object.assign({isWaiting: false, isFailed: false}, onSuccess(state, action));
           }
           else {
-            return {...state, isWaiting: false, isFailed: false, data: action.result}
+            return Object.assign({}, state, {isWaiting: false, isFailed: false, data: action.result});
           }
         }
         case FAIL_STATE: {
           if (typeof onFail === 'function') {
-            return {isWaiting: false, isFailed: true, ...onFail(state, action)};
+            return Object.assign({isWaiting: false, isFailed: true}, onFail(state, action));
           }
           else {
-            return {...state, isWaiting: false, isFailed: true, error: action.error};
+            return Object.assign({}, state, {isWaiting: false, isFailed: true, error: action.error});
           }
         }
         default: return state;
@@ -41,16 +66,14 @@ function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
     },
     submit () {
       let {promise} = handlers;
-      promise = promise ||   Promise.resolve();
-      const args = arguments;
+      const args: any = arguments;
       return {
         types: [ WAITING_STATE, SUCCESS_STATE, FAIL_STATE ],
         promise: request => promise(request)(...args)
-      }
+      };
     }
   };
 }
-
 
 /**
  * apply
@@ -62,8 +85,8 @@ function createReducer ({storeKey, reducerName, initialState = {}, handlers}) {
  * @param {Function} [data.onError] - callback on request fails. Must return new state
  * @param {Boolean} replace - replace existing reducer in cache
  */
-export function applyRequestReducers (storeKey, data, replace = false) {
-  const reducers = [];
+export function applyRequestReducers<Payload extends object, State extends TBasicState>(storeKey, data: IRequestReducersData<Payload, State>, replace = false) {
+  const reducers: any[] = [];
   const commonInitialState = {
     error: null
   };
@@ -77,7 +100,6 @@ export function applyRequestReducers (storeKey, data, replace = false) {
   return applyReducer(storeKey, localCompose(...reducers), replace);
 }
 
-
 export function createRequestReducer (store) {
   appStore = store;
 }
@@ -88,7 +110,7 @@ export function requestReducer (key) {
       if (!cache[key]) {
         throw new Error (`There is no request reducer with key ${key} found`) ;
       }
-      return appStore.dispatch(cache[key].submit(...arguments));
+      return appStore ? appStore.dispatch(cache[key].submit(...arguments as any)) : undefined;
     }
-  }
+  };
 }
