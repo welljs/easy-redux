@@ -5,9 +5,9 @@ const cache = {};
 /**
  * Add reducer to application reducers cache,  for further combine it with redux final reducers
  * Use this function when you want to combine your components reducers to final reducers
- * @param {string} key
- * @param fn
- * @param {boolean} replace
+ * @param {string} key - reducers key
+ * @param fn - reducer
+ * @param {boolean} replace - replace existing reducer in cache
  */
 export function applyReducer(key: string, fn, replace: boolean = false): void {
   if (!!cache[key] && !replace) {
