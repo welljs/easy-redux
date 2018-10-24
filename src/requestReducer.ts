@@ -77,13 +77,9 @@ function createReducer<Payload extends object, State extends TBasicState>({store
 
 /**
  * apply
- * @param {String} storeKey
- * @param {Object} data
- * @param {Object} [data.initialState] - optional parameter to  set up initial state
- * @param {Function} data.promise - a promise that performs a request
- * @param {Function} [data.onSuccess] - callback on success fulfilled request. Must return new state
- * @param {Function} [data.onError] - callback on request fails. Must return new state
- * @param {Boolean} replace - replace existing reducer in cache
+ * @param storeKey
+ * @param {IRequestReducersData<Payload extends object, State extends TBasicState>} data
+ * @param {boolean} replace
  */
 export function applyRequestReducers<Payload extends object, State extends TBasicState>(storeKey, data: IRequestReducersData<Payload, State>, replace = false) {
   const reducers: any[] = [];
