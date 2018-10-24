@@ -4,7 +4,7 @@
   "description": "Helpers to facilitate the work with redux",
   "main": "lib/index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register test/**/*",
+    "test": "jest",
     "build": "rm -rf lib && tsc",
     "lint": "tslint --project tsconfig.json"
   },
