@@ -35,10 +35,9 @@ interface ICreateActionsOptions<State extends object> {
 }
 
 /**
- *
- * @param {String} name
- * @param {Object} options
- * @returns {Function}
+ * @param {string} name
+ * @param {IActionOptions<Payload extends object, State extends object>} options
+ * @returns {() => (void | IAction | TAsyncAction)}
  */
 export function createAction<Payload extends object, State extends object>(name: string, options: IActionOptions<Payload, State>): () => void | IAction | TAsyncAction {
   const WAIT = `WAIT@${name}`;
