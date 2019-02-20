@@ -1,8 +1,9 @@
 {
   "name": "easy-redux",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Helpers to facilitate the work with redux",
   "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "rm -rf lib && tsc",
@@ -38,17 +39,17 @@
     "@types/redux": "3.6.31",
     "awesome-typescript-loader": "5.2.1",
     "better-npm-run": "0.1.1",
-    "jest": "^24.1.0",
+    "jest": "24.1.0",
     "source-map-loader": "0.2.4",
     "ts-jest": "23.10.4",
     "tslint": "5.11.0",
     "tslint-loader": "3.6.0",
     "tslint-react": "3.6.0",
-    "typescript": "3.0.3",
-    "webpack-cli": "^3.1.2"
+    "typescript": "3.3.3",
+    "webpack-cli": "3.2.3"
   },
   "dependencies": {
-    "redux": "4.0.0",
-    "webpack": "4.20.2"
+    "redux": "4.0.1",
+    "webpack": "4.29.5"
   }
 }
